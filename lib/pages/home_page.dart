@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   final searchController = TextEditingController();
 
   List<TotalModel> allData = [];
+  List<TotalModel> dataFiltered = [];
   late StreamSubscription<List<TotalModel>> _streamSubscription;
 
   bool isSearched = false;
@@ -29,7 +30,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _refresh();
+    _streamSubscription = _refresh();
+    dataFiltered = allData;
   }
 
   @override
@@ -42,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     _streamSubscription = Helper.getAllData().listen((data) {
       setState(() {
         allData = data;
+        dataFiltered = data;
       });
     });
     return _streamSubscription;
@@ -108,7 +111,21 @@ class _HomePageState extends State<HomePage> {
                   label: const MyText(text: "Search"),
                   controller: searchController,
                   onPressed: () => searchController.clear(),
-                  onChanged: (p0) {},
+                  onChanged: (value) {
+                    setState(() {
+                      if (value.trim().isEmpty) {
+                        // When search is empty, show all data
+                        dataFiltered = allData;
+                      } else {
+                        // Filter data based on item name (case-insensitive)
+                        dataFiltered = allData.where((data) {
+                          return data.item
+                              .toLowerCase()
+                              .contains(value.trim().toLowerCase());
+                        }).toList();
+                      }
+                    });
+                  },
                 ),
               )
             : const MyText(
@@ -196,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
               rows: [
-                ...allData.map(
+                ...dataFiltered.map(
                   (element) => DataRow(cells: [
                     DataCell(
                       MyText(
@@ -289,7 +306,7 @@ class _HomePageState extends State<HomePage> {
                       MyText(
                         text: NumberFormat.currency(
                                 locale: 'fr_MG', symbol: 'Ar')
-                            .format(allData.fold(
+                            .format(dataFiltered.fold(
                                 0.0, (prev, element) => prev + element.price)),
                         fontWeight: FontWeight.bold,
                       ),
