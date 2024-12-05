@@ -9,6 +9,7 @@ class MyTextField extends StatelessWidget {
   final String? hintText;
   final TextInputType? keyboardType;
   final void Function()? onPressed;
+  final void Function(String)? onChanged;
 
   const MyTextField({
     super.key,
@@ -19,7 +20,7 @@ class MyTextField extends StatelessWidget {
     this.label,
     this.hintText,
     this.keyboardType,
-    this.onPressed,
+    this.onPressed, this.onChanged,
   });
 
   @override
@@ -32,6 +33,7 @@ class MyTextField extends StatelessWidget {
       child: TextFormField(
         keyboardType: keyboardType,
         controller: controller,
+        onChanged: onChanged,
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(4.0),

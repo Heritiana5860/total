@@ -1,13 +1,15 @@
 class TotalModel {
   String item;
   double price;
+  int? id;
 
-  TotalModel({required this.item, required this.price});
+  TotalModel({required this.item, required this.price, this.id});
 
   factory TotalModel.fromMap(Map<String, dynamic> json) {
     return TotalModel(
       item: json['item'],
-      price: json['price'],
+      price: (json['price'] as num).toDouble(),
+      id: json['id'],
     );
   }
 
@@ -16,9 +18,10 @@ class TotalModel {
     return {
       'item': item,
       'price': price,
+      'id': id,
     };
   }
 
   @override
-  String toString() => 'TotalModel(item: $item, price: $price)';
+  String toString() => 'TotalModel(id: $id, item: $item, price: $price)';
 }
